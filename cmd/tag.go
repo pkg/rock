@@ -78,25 +78,33 @@ var tagCmd = &cobra.Command{
 			maxMajor = maxMajor + 1
 			maxMinor = 0
 			maxPatch = 0
-			tag(repo, maxMajor, maxMinor, maxPatch)
+			if err := tag(repo, maxMajor, maxMinor, maxPatch); err != nil {
+				fmt.Println(err)
+				return
+			}
 			tagged = true
 		}
 
 		if Minor {
 			maxMinor = maxMinor + 1
 			maxPatch = 0
-			tag(repo, maxMajor, maxMinor, maxPatch)
+			if err := tag(repo, maxMajor, maxMinor, maxPatch); err != nil {
+				fmt.Println(err)
+				return
+			}
 			tagged = true
 		}
 
 		if Patch {
 			maxPatch = maxPatch + 1
-			tag(repo, maxMajor, maxMinor, maxPatch)
+			if err := tag(repo, maxMajor, maxMinor, maxPatch); err != nil {
+				fmt.Println(err)
+				return
+			}
 			tagged = true
 		}
 		if tagged {
-			fmt.Println("Repository tagged.  Please push upstream to distribute the tag.")
-			fmt.Printf("example: git push origin %s\n", tagString(maxMajor, maxMinor, maxPatch))
+			fmt.Printf("Tagged and pushed release %s\n", tagString(maxMajor, maxMinor, maxPatch))
 		}
 	},
 }
