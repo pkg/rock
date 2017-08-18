@@ -14,7 +14,9 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"os/exec"
 
 	"github.com/blang/semver"
 	"github.com/gogits/git"
@@ -125,7 +127,16 @@ func tag(repo *git.Repository, major, minor, patch uint64) error {
 	fmt.Println("Current Commit ID: ", id)
 	tag := tagString(major, minor, patch)
 	err = repo.CreateTag(tag, id)
-
+	if err != nil {
+		return errors.Wrap(err, "Unable to create tag")
+	}
+	cmd := exec.Command("git", "push", "origin", tag)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		return errors.Wrap(err, "Unable to push to origin")
+	}
 	return errors.Wrap(err, "Unable to create tag")
 }
 
