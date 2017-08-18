@@ -30,7 +30,7 @@ var Patch bool
 var tagCmd = &cobra.Command{
 	Use:     "tags",
 	Short:   "View or add semantic version tags to a project",
-	Long:    ``,
+	Long:    `The tag command allows you to view or create tags in your version control system.  Tags are based on Semantic Version numbering, and are comprised of Major, Minor, and Patch version identifiers.`,
 	Aliases: []string{"tag"},
 	Run: func(cmd *cobra.Command, args []string) {
 		var maxMajor, maxMinor, maxPatch uint64
@@ -94,6 +94,7 @@ var tagCmd = &cobra.Command{
 		}
 		if tagged {
 			fmt.Println("Repository tagged.  Please push upstream to distribute the tag.")
+			fmt.Printf("example: git push origin %s\n", tagString(maxMajor, maxMinor, maxPatch))
 		}
 	},
 }
@@ -122,8 +123,13 @@ func tag(repo *git.Repository, major, minor, patch uint64) error {
 		return errors.Wrap(err, "Unable to get commit ID of branch ")
 	}
 	fmt.Println("Current Commit ID: ", id)
-	tag := fmt.Sprintf("v%d.%d.%d", major, minor, patch)
+	tag := tagString(major, minor, patch)
 	err = repo.CreateTag(tag, id)
 
 	return errors.Wrap(err, "Unable to create tag")
+}
+
+func tagString(major, minor, patch uint64) string {
+
+	return fmt.Sprintf("v%d.%d.%d", major, minor, patch)
 }

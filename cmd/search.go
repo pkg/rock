@@ -60,7 +60,7 @@ type PackageSearchQuery struct {
 var searchCmd = &cobra.Command{
 	Use:   "search",
 	Short: "search for packages",
-	Long:  ``,
+	Long:  `The search command allows you to search for packages on gopher.rocks which indexes Go packages.  You may search by author or keywords.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		psq := PackageSearchQuery{
 			Authors:  []string{AuthorSearch},

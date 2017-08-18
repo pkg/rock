@@ -28,7 +28,9 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "rock",
 	Short: "rock is a tool to help manage versions of a Go package",
-	Long:  ``,
+	Long: `The rock tool has commands to help you display and create releases/tags for your Go
+	packages.  It also allows you to discover Go packages by searching an online repository of package
+	metadata.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
