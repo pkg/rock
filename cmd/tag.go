@@ -28,9 +28,10 @@ var Patch bool
 
 // tagCmd represents the tag command
 var tagCmd = &cobra.Command{
-	Use:   "tags",
-	Short: "View or add semantic version tags to a project",
-	Long:  ``,
+	Use:     "tags",
+	Short:   "View or add semantic version tags to a project",
+	Long:    ``,
+	Aliases: []string{"tag"},
 	Run: func(cmd *cobra.Command, args []string) {
 		var maxMajor, maxMinor, maxPatch uint64
 
