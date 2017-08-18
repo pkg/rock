@@ -23,6 +23,10 @@ Flags:
 Use "rock [command] --help" for more information about a command.
 ```
 
+## gopher.rocks
+
+The `rock` tool search function uses [gopher.rocks](https://gopher.rocks) which holds metadata about Go packages.
+
 ## Contributing
 
 
