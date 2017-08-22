@@ -6,7 +6,7 @@ The `rock` command allows you to tag your code with releases that conform to sem
 
 ```
 $ rock --help
-rock is a tool to help manage versions of a Go package
+rock is a tool to help manage Go packages 
 
 Usage:
   rock [command]
