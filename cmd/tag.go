@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	"code.gitea.io/git"
 	"github.com/blang/semver"
 	"github.com/gogits/git"
 	"github.com/pkg/errors"
@@ -128,7 +129,7 @@ func init() {
 func tag(repo *git.Repository, major, minor, patch uint64) error {
 
 	fmt.Printf("Creating v%d.%d.%d\n", major, minor, patch)
-	id, err := repo.GetCommitIdOfBranch("master")
+	id, err := repo.GetBranchCommitID("master")
 	if err != nil {
 		return errors.Wrap(err, "Unable to get commit ID of branch ")
 	}
