@@ -20,7 +20,7 @@ import (
 
 	"code.gitea.io/git"
 	"github.com/blang/semver"
-	"github.com/gogits/git"
+	// "github.com/gogits/git"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +51,7 @@ var tagCmd = &cobra.Command{
 		fmt.Println("Existing Tags:")
 		for _, tag := range tags {
 			if string(tag[0]) == "v" {
-				tag = tag[1:len(tag)]
+				tag = tag[1:]
 			}
 			sv, err := semver.Make(tag)
 			if err != nil {
