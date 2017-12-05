@@ -29,6 +29,9 @@ var Major bool
 var Minor bool
 var Patch bool
 
+// DeleteTag is the tag string you wish to delete.
+var DeleteTag string
+
 // tagCmd represents the tag command
 var tagCmd = &cobra.Command{
 	Use:     "tags",
@@ -104,6 +107,12 @@ var tagCmd = &cobra.Command{
 			}
 			tagged = true
 		}
+		if DeleteTag != "" {
+			if err := deleteTag(repo, DeleteTag); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
 		if tagged {
 			fmt.Printf("Tagged and pushed release %s\n", tagString(maxMajor, maxMinor, maxPatch))
 		}
@@ -121,6 +130,8 @@ func init() {
 	tagCmd.PersistentFlags().BoolVarP(&Major, "major", "m", false, "increment major version")
 	tagCmd.PersistentFlags().BoolVarP(&Minor, "minor", "n", false, "increment minor version")
 	tagCmd.PersistentFlags().BoolVarP(&Patch, "patch", "p", false, "increment patch version")
+	tagCmd.PersistentFlags().StringVarP(&DeleteTag, "delete", "d", "", "delete a tagged version")
+
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -149,7 +160,33 @@ func tag(repo *git.Repository, major, minor, patch uint64) error {
 	return errors.Wrap(err, "Unable to create tag")
 }
 
-func tagString(major, minor, patch uint64) string {
+func deleteTag(repo *git.Repository, tag string) error {
 
+	if !repo.IsTagExist(tag) {
+		return errors.Errorf("tag %v does not exist", tag)
+	}
+
+	stdout, err := git.NewCommand("tag", "--delete", tag).RunInDir(repo.Path)
+
+	fmt.Println(stdout)
+
+	if err != nil {
+		return errors.Wrap(err, "unable to delete tag")
+	}
+
+	err = git.Push(repo.Path, git.PushOptions{
+		Remote: "origin",
+		Branch: ":"+tag,
+		Force:  false,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "unable to push to origin")
+	}
+
+ 	return errors.Wrap(err, "unable to delete tag")
+}
+
+func tagString(major, minor, patch uint64) string {
 	return fmt.Sprintf("v%d.%d.%d", major, minor, patch)
 }
