@@ -61,10 +61,15 @@ var tagCmd = &cobra.Command{
 				fmt.Println("error: ", err)
 				continue
 			}
+			fmt.Printf("v%d.%d.%d\n", sv.Major, sv.Minor, sv.Patch)
 			if sv.Major > maxMajor {
 				maxMajor = sv.Major
 				maxMinor = 0
 				maxPatch = 0
+			}
+
+			if sv.Major < maxMajor {
+				continue
 			}
 
 			if sv.Minor > maxMinor {
@@ -72,10 +77,13 @@ var tagCmd = &cobra.Command{
 				maxPatch = 0
 			}
 
+			if sv.Minor < maxMinor {
+				continue
+			}
+
 			if sv.Patch > maxPatch {
 				maxPatch = sv.Patch
 			}
-			fmt.Printf("v%d.%d.%d\n", sv.Major, sv.Minor, sv.Patch)
 		}
 		var tagged bool
 		if Major {
