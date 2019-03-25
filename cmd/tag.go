@@ -20,6 +20,7 @@ import (
 
 	"code.gitea.io/git"
 	"github.com/blang/semver"
+
 	// "github.com/gogits/git"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -31,6 +32,9 @@ var Patch bool
 
 // DeleteTag is the tag string you wish to delete.
 var DeleteTag string
+
+// CommitID is ID of the commit to be affected.
+var CommitID string
 
 // tagCmd represents the tag command
 var tagCmd = &cobra.Command{
@@ -90,7 +94,7 @@ var tagCmd = &cobra.Command{
 			maxMajor = maxMajor + 1
 			maxMinor = 0
 			maxPatch = 0
-			if err := tag(repo, maxMajor, maxMinor, maxPatch); err != nil {
+			if err := tag(repo, maxMajor, maxMinor, maxPatch, CommitID); err != nil {
 				fmt.Println(err)
 				return
 			}
@@ -100,7 +104,7 @@ var tagCmd = &cobra.Command{
 		if Minor {
 			maxMinor = maxMinor + 1
 			maxPatch = 0
-			if err := tag(repo, maxMajor, maxMinor, maxPatch); err != nil {
+			if err := tag(repo, maxMajor, maxMinor, maxPatch, CommitID); err != nil {
 				fmt.Println(err)
 				return
 			}
@@ -109,7 +113,7 @@ var tagCmd = &cobra.Command{
 
 		if Patch {
 			maxPatch = maxPatch + 1
-			if err := tag(repo, maxMajor, maxMinor, maxPatch); err != nil {
+			if err := tag(repo, maxMajor, maxMinor, maxPatch, CommitID); err != nil {
 				fmt.Println(err)
 				return
 			}
@@ -139,18 +143,21 @@ func init() {
 	tagCmd.PersistentFlags().BoolVarP(&Minor, "minor", "n", false, "increment minor version")
 	tagCmd.PersistentFlags().BoolVarP(&Patch, "patch", "p", false, "increment patch version")
 	tagCmd.PersistentFlags().StringVarP(&DeleteTag, "delete", "d", "", "delete a tagged version")
-
+	tagCmd.PersistentFlags().StringVarP(&CommitID, "commit", "c", "", "tag specific commit (defaults to master branch)")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 }
 
-func tag(repo *git.Repository, major, minor, patch uint64) error {
+func tag(repo *git.Repository, major, minor, patch uint64, commit string) error {
 
 	fmt.Printf("Creating v%d.%d.%d\n", major, minor, patch)
 	id, err := repo.GetBranchCommitID("master")
 	if err != nil {
 		return errors.Wrap(err, "Unable to get commit ID of branch ")
+	}
+	if commit != "" {
+		id = commit
 	}
 	fmt.Println("Current Commit ID: ", id)
 	tag := tagString(major, minor, patch)
@@ -184,7 +191,7 @@ func deleteTag(repo *git.Repository, tag string) error {
 
 	err = git.Push(repo.Path, git.PushOptions{
 		Remote: "origin",
-		Branch: ":"+tag,
+		Branch: ":" + tag,
 		Force:  false,
 	})
 
@@ -192,7 +199,7 @@ func deleteTag(repo *git.Repository, tag string) error {
 		return errors.Wrap(err, "unable to push to origin")
 	}
 
- 	return errors.Wrap(err, "unable to delete tag")
+	return errors.Wrap(err, "unable to delete tag")
 }
 
 func tagString(major, minor, patch uint64) string {

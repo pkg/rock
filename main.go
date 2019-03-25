@@ -13,7 +13,7 @@
 
 package main
 
-import "github.com/pkg/rock/cmd"
+import "github.com/ajpetersons/rock/cmd"
 
 func main() {
 	cmd.Execute()
